@@ -67,35 +67,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers("/auth/**").permitAll()
-                // OAuth2 flow paths — handled by Spring Security, not our JWT filter
-                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                // Everything else requires a valid JWT
-                .anyRequest().authenticated()
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            // ── OAuth2 Social Login ──────────────────────────────────────────
-            .oauth2Login(oauth2 -> oauth2
-                .authorizationEndpoint(authEndpoint -> authEndpoint
-                    // Trigger URL: GET /oauth2/authorization/{google|github|facebook}
-                    .baseUri("/oauth2/authorization")
-                    .authorizationRequestRepository(cookieAuthorizationRequestRepository))
-                .redirectionEndpoint(redirect -> redirect
-                    // Callback URL registered in each provider's app settings:
-                    // http://localhost:8080/login/oauth2/code/{registrationId}
-                    .baseUri("/login/oauth2/code/*"))
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService))
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler)
-            );
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers("/auth/**").permitAll()
+                        // OAuth2 flow paths — handled by Spring Security, not our JWT filter
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                        // Everything else requires a valid JWT
+                        .anyRequest().authenticated())
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // ── OAuth2 Social Login ──────────────────────────────────────────
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authEndpoint -> authEndpoint
+                                // Trigger URL: GET /oauth2/authorization/{google|github|facebook}
+                                .baseUri("/oauth2/authorization")
+                                .authorizationRequestRepository(cookieAuthorizationRequestRepository))
+                        .redirectionEndpoint(redirect -> redirect
+                                // Callback URL registered in each provider's app settings:
+                                // http://localhost:8080/login/oauth2/code/{registrationId}
+                                .baseUri("/login/oauth2/code/*"))
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler));
 
         return http.build();
     }
@@ -104,7 +101,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://expense-tracker-repo-0jwd.onrender.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
