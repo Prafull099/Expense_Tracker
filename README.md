@@ -1,52 +1,90 @@
-# Expense Tracker
+# 💰 Full-Stack Expense Tracker (Finance OS)
 
-A full-stack expense tracking application.
+A modern full-stack personal finance and expense tracking platform built with **Spring Boot**, **PostgreSQL**, **React 19**, **Tailwind CSS v4**, and **Docker**.
 
-## Project Structure
+---
+
+## 🏗️ Architecture & Monorepo Layout
 
 ```
 Expense_Tracker/
-├── backend/          # Spring Boot REST API (Java 21, PostgreSQL)
+├── Backend/                 # Spring Boot 4 REST API (Java 17/21, PostgreSQL, JJWT)
 │   ├── src/
-│   ├── pom.xml
-│   └── mvnw
-└── frontend/         # React + Vite frontend (TailwindCSS)
-    ├── src/
-    │   ├── Components/
-    │   ├── App.jsx
-    │   └── main.jsx
-    ├── index.html
-    └── package.json
+│   ├── Dockerfile          # Multi-stage Alpine JRE build
+│   └── pom.xml
+├── frontend/                # React 19 + Vite + Tailwind v4 + Nginx
+│   ├── src/
+│   │   ├── Components/     # Home, Analytics, Savings, Navbar, Login, etc.
+│   │   ├── App.jsx
+│   │   └── index.css
+│   ├── nginx.conf          # Reverse proxy + SPA routing + gzip
+│   └── Dockerfile          # Multi-stage Node build & Nginx production server
+├── docker-compose.yml       # Orchestrates Postgres, Backend & Frontend
+├── .env.example             # Template for secrets and credentials
+└── README.md
 ```
 
-## Getting Started
+---
 
-### Backend
+## 🐳 Quick Start with Docker (Recommended)
+
+Run the entire application (Database + Backend + Frontend) in one command:
+
 ```bash
-cd backend
-./mvnw spring-boot:run        # starts on http://localhost:8080
+# 1. Clone the repository
+git clone https://github.com/Prafull099/Expense_Tracker.git
+cd Expense_Tracker
+
+# 2. Configure environment variables (optional for local testing)
+cp .env.example .env
+
+# 3. Launch all containers
+docker compose up --build -d
 ```
 
-### Frontend
+- 🌐 **Frontend Web App**: `http://localhost:5173`
+- ⚙️ **Backend REST API**: `http://localhost:8080`
+- 🐘 **PostgreSQL Database**: `localhost:5432`
+
+To stop:
+```bash
+docker compose down
+```
+
+---
+
+## 💻 Local Development (Without Docker)
+
+### 1. Backend
+```bash
+cd Backend
+./mvnw spring-boot:run        # Starts on http://localhost:8080
+```
+
+### 2. Frontend
 ```bash
 cd frontend
 npm install
-npm run dev                   # starts on http://localhost:5173
+npm run dev                   # Starts on http://localhost:5173
 ```
 
-## OAuth2 Login
+---
 
-- Google: `http://localhost:8080/oauth2/authorization/google`
-- GitHub: `http://localhost:8080/oauth2/authorization/github`
+## 🔐 OAuth2 & Security
 
-After OAuth2 login, you'll be redirected to `http://localhost:5173/oauth2/redirect?token=<JWT>`
+- **Google OAuth2**: `http://localhost:8080/oauth2/authorization/google`
+- **GitHub OAuth2**: `http://localhost:8080/oauth2/authorization/github`
+- **Success Redirect**: `http://localhost:5173/oauth2/redirect?token=<JWT>`
 
-## API Endpoints
+---
+
+## 🔌 API Reference
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/auth/register` | Register with email/password |
-| POST | `/auth/login` | Login → returns JWT |
-| GET | `/auth/me` | Get current user profile |
-| GET | `/oauth2/authorization/google` | Start Google OAuth2 |
-| GET | `/oauth2/authorization/github` | Start GitHub OAuth2 |
+|---|---|---|
+| `POST` | `/auth/register` | Register new user with case-insensitive collision check |
+| `POST` | `/auth/login` | Login with username/email & password → returns JWT |
+| `GET` | `/auth/me` | Fetch authenticated user profile & roles |
+| `GET` | `/oauth2/authorization/google` | Trigger Google OAuth2 flow |
+| `GET` | `/oauth2/authorization/github` | Trigger GitHub OAuth2 flow |
+
