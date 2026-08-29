@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 import {
+
   Wallet,
   Mail,
   Lock,
@@ -78,13 +80,13 @@ export default function Login({ onLogin }) {
       const cleanEmail = email.trim().toLowerCase();
 
       if (isSignup) {
-        response = await axios.post("http://localhost:8080/auth/register", {
+        response = await axios.post(`${API_BASE_URL}/auth/register`, {
           username: cleanEmail,
           email: cleanEmail,
           password: password,
         });
       } else {
-        response = await axios.post("http://localhost:8080/auth/login", {
+        response = await axios.post(`${API_BASE_URL}/auth/login`, {
           username: cleanEmail,
           password: password,
         });
@@ -111,8 +113,9 @@ export default function Login({ onLogin }) {
   };
 
   const handleOAuthLogin = (provider) => {
-    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 px-4">

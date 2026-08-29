@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "./config/api";
 import Navbar from "./Components/Navbar";
+
 import Footer from "./Components/Footer";
 import Home from "./Components/Home";
 import Login from "./Components/Login";
@@ -112,11 +114,12 @@ function App() {
             const storedToken = localStorage.getItem("token");
             if (storedToken) {
                 try {
-                    const response = await axios.get("http://localhost:8080/auth/me", {
+                    const response = await axios.get(`${API_BASE_URL}/auth/me`, {
                         headers: {
                             Authorization: `Bearer ${storedToken}`
                         }
                     });
+
                     setUser({
                         name: response.data.name || response.data.username,
                         email: response.data.email,
